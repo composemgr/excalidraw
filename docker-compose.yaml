@@ -21,8 +21,8 @@ services:
       PUID: ${SERVICE_USER:-1000}
       PGID: ${SERVICE_GROUP:-1000}
     volumes:
-      - ./rootfs/config/excalidraw:/config
-      - ./rootfs/data/excalidraw:/data
+      - ./volumes/config/excalidraw:/config
+      - ./volumes/data/excalidraw:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
