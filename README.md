@@ -47,8 +47,8 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/config/excalidraw` - Data storage
-- `./rootfs/data/excalidraw` - Data storage
+- `./volumes/config/excalidraw` - Data storage
+- `./volumes/data/excalidraw` - Data storage
 
 ## 🔍 Logging
 
