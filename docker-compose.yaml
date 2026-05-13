@@ -16,17 +16,41 @@ services:
     logging: *default-logging
     networks:
       - excalidraw
+      - proxy
+      - cloudflare
     ports:
       - "172.17.0.1:3003:80"
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: excalidraw-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://excalidraw-app:80'
+      - 'cloudflare.hostname=excalidraw.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.excalidraw-app.entrypoints=http'
+      - 'traefik.http.routers.excalidraw-app-secure.tls=true'
+      - 'traefik.http.routers.excalidraw-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.excalidraw-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.excalidraw-app.middlewares=excalidraw-app-https-redirect'
+      - 'traefik.http.routers.excalidraw-app-secure.entrypoints=https'
+      - 'traefik.http.routers.excalidraw-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.excalidraw-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.excalidraw-app-secure.service=excalidraw-app'
+      - 'traefik.http.services.excalidraw-app.loadbalancer.server.port=80'
 
 networks:
   excalidraw:
     name: excalidraw
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
