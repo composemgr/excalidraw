@@ -1,5 +1,6 @@
 # nginx proxy address - http://172.17.0.1:3003
 
+name: excalidraw
 x-logging: &default-logging
   driver: json-file
   options:
@@ -9,20 +10,16 @@ x-logging: &default-logging
 services:
   excalidraw:
     image: excalidraw/excalidraw:latest
+    pull_policy: always
     container_name: excalidraw-app
-    restart: unless-stopped
+    restart: always
     logging: *default-logging
     networks:
       - excalidraw
     ports:
-      - "3003:80"
+      - "172.17.0.1:3003:80"
     environment:
       TZ: ${TZ:-America/New_York}
-      PUID: ${SERVICE_USER:-1000}
-      PGID: ${SERVICE_GROUP:-1000}
-    volumes:
-      - ./volumes/config/excalidraw:/config
-      - ./volumes/data/excalidraw:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
@@ -31,4 +28,5 @@ services:
 
 networks:
   excalidraw:
+    name: excalidraw
     external: false
